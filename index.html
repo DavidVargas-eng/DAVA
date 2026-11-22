@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAVA | Plataforma Central</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+<div class="app">
+<aside class="sidebar">
+ <div class="brand"><b>DAVA</b><small>PORTAFOLIO DE SOLUCIONES</small></div>
+ <nav>
+  <button class="active" data-view="home"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V21h13V9.5M9 21v-7h6v7"/></svg></span><i class="label">Inicio</i></button>
+  <button data-view="modules"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg></span><i class="label">Módulos</i></button>
+  <button data-view="clients"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.4-3 2.5-4.6 5.5-4.6s5.1 1.6 5.5 4.6"/><circle cx="17" cy="8.5" r="2.4"/><path d="M16 14.7c2.5 0 4.2 1.3 4.5 3.5"/></svg></span><i class="label">Clientes</i></button>
+  <button data-view="equipment"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="1.5"/><path d="M1.5 20h21M9 17v3m6-3v3"/></svg></span><i class="label">Equipos</i></button>
+  <button data-view="support"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="m5.6 5.6 3.5 3.5m5.8 5.8 3.5 3.5m0-12.8-3.5 3.5m-5.8 5.8-3.5 3.5"/></svg></span><i class="label">Soporte</i></button>
+  <button data-view="reports"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10h4v10M10 20V4h4v16M16 20v-7h4v7"/><path d="M2 21h20"/></svg></span><i class="label">Reportes</i></button>
+  <button data-view="settings"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1 1.2 1.9-1.7 1.7-1.9-1.2-.1-.1a7.5 7.5 0 0 1-1.6.7l-.4 2.2h-2.4l-.4-2.2a7.5 7.5 0 0 1-1.6-.7l-.1.1-1.9 1.2-1.7-1.7 1.2-1.9.1-.1a7.5 7.5 0 0 1-.7-1.6L3.3 13V10.6l2.2-.4a7.5 7.5 0 0 1 .7-1.6l-.1-.1-1.2-1.9 1.7-1.7 1.9 1.2.1.1a7.5 7.5 0 0 1 1.6-.7l.4-2.2H13l.4 2.2a7.5 7.5 0 0 1 1.6.7l.1-.1 1.9-1.2 1.7 1.7-1.2 1.9-.1.1a7.5 7.5 0 0 1 .7 1.6l2.2.4V13l-2.2.4a7.5 7.5 0 0 1-.7 1.6Z"/></svg></span><i class="label">Configuración</i></button>
+ </nav>
+ <div class="side-help"><b>¿Necesitas ayuda?</b><br>Estamos para apoyarte.</div>
+</aside>
+<main>
+ <header class="topbar"><label class="search">⌕ <input id="globalSearch" placeholder="Buscar en la plataforma..."></label><div class="user"><div class="avatar">DV</div><span>Administrador<br><small>DAVA Soluciones</small></span></div></header>
+ <div class="content">
+  <div class="dashboard" id="dashboard">
+   <section class="hero"><div class="hero-copy"><p class="welcome">Bienvenido a DAVA</p><h1>Soluciones simples<br>para grandes resultados</h1><p>Software, equipos y soporte para que<br>tu negocio siga creciendo.</p></div><div class="hero-note"><b>Todo en un solo lugar</b><p>Herramientas, equipos y soporte<br>para impulsar tu negocio.</p></div></section>
+   <section class="section" id="moduleSection"><div class="section-head"><h2>Nuestros módulos</h2><button class="link" onclick="showModules()">Ver todos →</button></div><div class="modules" id="moduleGrid"></div></section>
+   <div class="lower">
+    <section class="panel wide"><h3>Resumen general</h3><div class="stats">
+     <div class="stat"><small>Clientes activos</small><b>12</b><span class="green">↗ +20%</span></div><div class="stat"><small>Equipos activos</small><b>28</b><span class="green">↗ +12%</span></div><div class="stat"><small>Implementaciones</small><b>6</b><span class="green">↗ +50%</span></div><div class="stat"><small>Soporte abierto</small><b>4</b><span class="green">↘ -33%</span></div>
+    </div></section>
+    <section class="panel"><h3>Mi empresa</h3><div class="company"><div class="company-icon">🏢</div><div><b>Empresa Demo</b><small>Plan Empresarial</small></div></div><button class="soft" onclick="openUtility('Mi empresa','./pages/empresa.html')">Ver detalles →</button></section>
+    <section class="panel"><h3>Mi mensualidad</h3><div class="company"><div class="company-icon">💳</div><div><b>$ 260.000</b><small>Próximo pago: 5 mar 2025</small></div></div><button class="soft" onclick="openUtility('Facturación','./pages/facturacion.html')">Ver facturación →</button></section>
+   </div>
+  </div>
+  <section class="workspace" id="workspace"><div class="workspace-head"><button class="back" onclick="backHome()">← Volver al inicio</button><strong id="workspaceTitle">Módulo</strong><small id="workspacePath"></small><button class="fullscreen-toggle" id="fullscreenToggle" onclick="toggleModuleFullscreen()">⛶ Ver en pantalla completa</button></div><iframe id="moduleFrame" title="Contenido del módulo" src="about:blank"></iframe></section>
+ </div>
+</main>
+</div>
+<script src="script.js"></script>
+</body>
+</html>

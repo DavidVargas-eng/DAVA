@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ROUTE-VALUATION</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+*{box-sizing:border-box}
+:root{
+  --bg:#f4f7fb;
+  --card:#ffffff;
+  --line:#dfe6ef;
+  --text:#17243a;
+  --muted:#687b98;
+  --navy:#0d2543;
+  --navy2:#102d50;
+  --blue:#1769e8;
+  --blue2:#0f5ddd;
+  --blue-soft:#edf4ff;
+  --success:#238657;
+  --warning:#a86b12;
+  --danger:#b23b3b;
+  --shadow:0 7px 24px rgba(24,52,84,.07)
+}
+html,body{margin:0;min-height:100%;background:var(--bg);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--text)}
+body{font-size:14px}
+header{
+  height:78px;background:var(--navy);border:0;display:flex;align-items:center;
+  padding:0 30px;color:#fff
+}
+.logo-wrap{display:flex;align-items:center;gap:18px}
+.logo-mark{
+  width:50px;height:50px;border-radius:15px;background:var(--blue);
+  display:flex;align-items:center;justify-content:center;color:#fff;
+  font-size:22px;font-weight:800
+}
+.header__brand {
+    display: flex;
+    align-items:center;
+    height: 100%;
+    width: 100%;
+}
+
+.header__logo {
+    display: block;
+    width: 280px;
+    height: auto;
+    max-height: 100%;
+    object-fit: contain;
+}
+.logo{font-size:25px;font-weight:800;letter-spacing:.2px;color:#fff}
+.logo-sub{font-size:12px;color:#d9e4f3;margin-top:2px}
+.version{
+  margin-left:auto;color:#e6eef8;
+  padding:10px 16px;border-radius:24px;font-size:12px
+}
+.app{max-width:none;margin:0;padding:28px 15px 45px}
+.stepper{
+  background:rgba(255,255,255,.96);border:1px solid #e3eaf4;border-radius:22px;
+  box-shadow:0 10px 30px rgba(24,52,84,.08);padding:13px 18px;margin-bottom:10px;
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:stretch;
+  gap:8px;overflow:visible
+}
+.step{
+  min-width:0;display:flex;align-items:center;position:relative;
+  background:#f8fafd;border:1px solid #e6edf6;padding:11px 14px;
+  border-radius:15px;color:#647895;font-size:12px;font-weight:800;
+  line-height:1.25;transition:.18s ease
+}
+.step:not(:last-child)::after{
+  content:"";position:absolute;right:-8px;top:50%;width:9px;height:2px;
+  background:#d7e1ee;transform:translateY(-50%);z-index:2
+}
+.step.active{
+  color:#173154;background:#edf4ff;border-color:#bcd5fb;
+  box-shadow:0 5px 15px rgba(23,105,232,.08)
+}
+.step.done{color:#34557d;background:#f3f8ff;border-color:#d7e5f7}
+.step span{
+  width:38px;height:38px;border:2px solid #cdd8e6;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;margin-right:10px;
+  font-size:15px;color:#607490;background:#fff;flex:none
+}
+.step.active span,.step.done span{
+  border-color:var(--blue);background:var(--blue);color:#fff;
+  box-shadow:0 4px 10px rgba(23,105,232,.18)
+}
+.step-caption{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-height:32px;padding:0 14px;border-radius:999px;
+  background:#eef3f9;color:#607692;text-align:center;
+  font-size:11px;font-weight:800;letter-spacing:.2px;
+  margin:0 auto 19px;position:relative;left:50%;transform:translateX(-50%);
+  width:max-content;max-width:100%
+}
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:19px;
+  box-shadow:var(--shadow);padding:30px
+}
+.title{font-size:19px;font-weight:800;margin:0 0 6px;color:#17243a}
+.subtitle{font-size:14px;color:var(--muted);margin-bottom:20px;line-height:1.55}
+.section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.btn{
+  border:0;border-radius:8px;padding:10px 15px;font-size:12px;font-weight:800;
+  cursor:pointer;transition:.15s
+}
+.btn.primary{background:var(--blue);color:#fff}.btn.primary:hover{background:var(--blue2)}
+.btn.secondary{background:#edf2f8;color:#29415f}
+.btn.success{background:#eaf6ef;color:var(--success)}
+.btn.danger{background:#faeded;color:var(--danger)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.upload{
+  min-height:250px;border:1px dashed #bfd0e6;border-radius:20px;
+  padding:30px;position:relative;text-align:center;
+  background:linear-gradient(180deg,#fbfdff 0%,#f7faff 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  box-sizing:border-box;overflow:hidden
+}
+.upload::before{
+  content:"";position:absolute;inset:10px;border:1px solid rgba(211,224,241,.45);
+  border-radius:15px;pointer-events:none
+}
+.upload label{
+  cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:9px;min-width:190px;min-height:92px;box-sizing:border-box;
+  color:#fff;font-size:14px;font-weight:800;letter-spacing:.1px;
+  padding:16px 24px;position:relative;z-index:1;background:var(--blue);
+  border-radius:14px;box-shadow:0 8px 20px rgba(23,105,232,.18);
+  transition:transform .16s ease,box-shadow .16s ease,background .16s ease
+}
+.upload label:hover{background:var(--blue2);transform:translateY(-1px);box-shadow:0 11px 24px rgba(23,105,232,.22)}
+.upload label::before{
+  content:"↥";position:static;transform:none;color:#fff;font-size:25px;
+  line-height:1;font-weight:500
+}
+.upload input[type=file]{display:none}
+.upload .small{font-size:12px;margin-top:13px;color:#7084a1;position:relative;z-index:1}
+.upload .small::before{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;background:#9eb6d7;margin:0 7px 2px 0}
+.small{font-size:11px;color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:12px 0}
+.stat{background:#f7f9fc;border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.stat b{display:block;font-size:17px}.stat span{font-size:10px;color:var(--muted);text-transform:uppercase}
+.filters{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin:12px 0}
+.field label{display:block;font-size:10px;font-weight:800;color:#667a96;text-transform:uppercase;margin-bottom:5px}
+select,input[type=text],input[type=number],input[type=date]{
+  width:100%;border:1px solid #d3dce8;border-radius:7px;padding:9px 10px;
+  background:#fff;font-size:12px;color:#243750;outline:none
+}
+select:focus,input:focus{border-color:#76a5ec;box-shadow:0 0 0 2px #eaf2ff}
+.table-wrap{border:1px solid var(--line);border-radius:9px;overflow:auto;max-height:480px}
+table{width:100%;border-collapse:collapse;font-size:11px}
+th{
+  position:sticky;top:0;background:#f1f5fa;color:#596c86;
+  text-transform:uppercase;font-size:9px;z-index:1
+}
+th,td{padding:8px 9px;border-bottom:1px solid #edf1f5;text-align:left;white-space:nowrap}
+tr:hover td{background:#fafcff}
+.empty{text-align:center;color:var(--muted);padding:35px}
+.actions{display:flex;gap:8px;justify-content:flex-end;margin-top:17px}
+.modal-bg{position:fixed;inset:0;background:rgba(10,29,52,.42);display:none;align-items:center;justify-content:center;z-index:10}
+.modal{width:min(520px,92vw);background:#fff;border-radius:15px;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal h3{margin:0 0 15px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.notice{
+  display:none;position:fixed;right:22px;bottom:22px;background:#fff;
+  border:1px solid var(--line);box-shadow:var(--shadow);border-left:4px solid var(--blue);
+  padding:12px 16px;border-radius:8px;font-size:12px;z-index:20
+}
+.mapping{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mapping .field{display:grid;grid-template-columns:1fr 1.2fr;align-items:center;gap:8px}
+.mapping .field label{margin:0}
+.badge{display:inline-block;padding:3px 7px;border-radius:20px;background:#eef2f6;font-size:9px;font-weight:700}
+.badge.ok{background:#eaf5ef;color:var(--success)}.badge.warn{background:#fff5df;color:var(--warning)}.badge.err{background:#faeded;color:var(--danger)}
+.hidden{display:none!important}
+.control-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.param-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.check{display:flex;gap:8px;align-items:center;font-size:12px;margin-top:24px}
+.result-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px}
+@media(max-width:1100px){
+  .step{padding:10px 10px;font-size:11px}
+  .step span{width:34px;height:34px;margin-right:8px;font-size:14px}
+  .stats,.result-grid{grid-template-columns:repeat(3,1fr)}
+  .filters{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:800px){
+  .stepper{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .step:not(:last-child)::after{display:none}
+}
+@media(max-width:700px){
+  header{padding:0 16px}.app{padding:18px 10px 30px}.card{padding:20px}
+  .stepper{grid-template-columns:1fr 1fr;padding:10px}
+  .step{padding:9px;font-size:10px}
+  .step span{width:32px;height:32px;margin-right:7px;font-size:13px}
+  .logo{font-size:20px}.logo-sub{display:none}
+  .param-grid,.mapping,.form-grid{grid-template-columns:1fr}
+}
+</style>
+
+<style id="dv-navigation-top-fix">
+/* Navegación de pasos: siempre disponible en la parte superior */
+.step-card, .step-panel, .card.step-card, .panel.step-panel {
+  position: relative;
+}
+.step-actions, .nav-actions, .actions.step-actions {
+  position: sticky;
+  top: 12px;
+  z-index: 30;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 18px;
+  padding: 10px 0;
+  background: linear-gradient(to bottom, rgba(255,255,255,.98) 72%, rgba(255,255,255,0));
+}
+.step-actions button:last-child, .nav-actions button:last-child {
+  order: 2;
+}
+@media (max-width:700px){
+  .step-actions, .nav-actions, .actions.step-actions {
+    top: 6px;
+    padding: 8px 0;
+  }
+}
+</style>
+
+
+<style id="dv-stepper-navigation">
+/* Navegación superior interactiva */
+.stepper .step {
+  cursor: pointer;
+  user-select: none;
+}
+.stepper .step:hover {
+  transform: translateY(-1px);
+  border-color: #b9cde7;
+  box-shadow: 0 5px 14px rgba(24,52,84,.08);
+}
+.stepper .step:focus-visible {
+  outline: 3px solid rgba(23,105,232,.22);
+  outline-offset: 2px;
+}
+</style>
+
+
+<style id="valuation-real-rules">
+.param-box{border:1px solid #e3eaf4;border-radius:16px;padding:16px;background:#fbfcfe}.param-box .check{margin-top:0;margin-bottom:12px}.conditional-field{margin-top:10px}.error-panel{border:1px solid #f1caca;background:#fff7f7;border-radius:16px;padding:16px;margin-bottom:16px}.error-title{font-weight:800;color:#a33;margin-bottom:5px}.error-list{display:grid;gap:7px;margin-top:10px}.error-item{display:flex;justify-content:space-between;gap:12px;padding:9px 11px;background:#fff;border:1px solid #f0dddd;border-radius:10px;font-size:12px}.missing-panel{border:1px solid #d8e4f3;background:#f7faff;border-radius:16px;padding:16px;margin-bottom:16px}.missing-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}.status-badge{display:inline-flex;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:800}.status-badge.ok{background:#eaf6ef;color:#247447}.status-badge.warn{background:#fff4df;color:#996300}.status-badge.err{background:#faeded;color:#a33}
+</style>
+</head>
+<body>
+<header>
+    <div class="header__brand">
+    <img src="images/Logotipo RouteValuation con mapa y valor financiero.png" alt="Route Valuation" class="header__logo">
+  <div class="version">VERSIÓN 9.0</div>
+</header>
+
+<div class="app">
+  <div class="stepper">
+    <div class="step active" id="s1"><span>①</span>CARGAR VALORES</div>
+    <div class="step" id="s2"><span>②</span>CARGA DE RUTERO</div>
+    <div class="step" id="s3"><span>③</span>PARÁMETROS DE VALORIZACIÓN</div>
+    <div class="step" id="s4"><span>④</span>VALORIZACIÓN DE LA RUTA</div>
+  </div>
+  <div class="step-caption" id="stepCaption">PASO 1 DE 4 · CARGAR VALORES</div>
+
+  <section id="step1">
+    <div class="card" id="masterUploadCard">
+      <h2 class="title">Cargar archivo de valores</h2>
+      <div class="subtitle">Carga el maestro que contiene TIPO TRANSPORTE, ORIGEN, DESTINO y VALOR.</div>
+      <div class="upload">
+        <label for="masterFile"><span>Seleccionar archivo</span></label>
+        <input id="masterFile" type="file" accept=".xlsx,.xls,.csv">
+        <div class="small">Formatos compatibles: Excel o CSV</div>
+      </div>
+    </div>
+
+    <div class="card hidden" id="masterCard">
+      <div class="section-head">
+        <div><h2 class="title">Tabla de valores</h2><div class="subtitle">Consulta, agrega, edita y descarga el maestro actualizado.</div></div>
+        <div class="control-row">
+          <button class="btn secondary" onclick="downloadMaster()">Descargar maestro</button>
+          <button class="btn primary" onclick="openMasterModal()">Agregar</button>
+        </div>
+      </div>
+      <div class="filters" id="masterFilters"></div>
+      <div class="table-wrap"><table><thead><tr><th>TIPO TRANSPORTE</th><th>ORIGEN</th><th>DESTINO</th><th>VALOR</th><th>ACCIÓN</th></tr></thead><tbody id="masterBody"></tbody></table></div>
+      <div class="actions actions"><button class="btn primary" onclick="goStep(2)">Continuar a carga de rutero →</button></div>
+    </div>
+  </section>
+
+  <section id="step2" class="hidden">
+    <div class="card" id="routeUploadCard">
+      <div class="section-head"><div><h2 class="title">Carga de rutero</h2><div class="subtitle">El sistema identifica las columnas y valida la estructura.</div></div><button class="btn secondary" onclick="goStep(1)">← Volver</button></div>
+      <div class="upload">
+        <label class="btn primary" for="routeFile">Seleccionar rutero</label>
+        <input id="routeFile" type="file" accept=".xlsx,.xls,.csv">
+        <div class="small" style="margin-top:10px">Se admite DISTANCIA SIGUIENTE PDV o, si no existe, LATITUD + LONGITUD.</div>
+      </div>
+    </div>
+
+    <div class="card hidden" id="mappingCard">
+      <div class="section-head"><div><h2 class="title">Validación de columnas</h2><div class="subtitle">Revisa la identificación automática antes de continuar.</div></div></div>
+      <div class="mapping" id="mappingGrid"></div>
+      <div class="actions actions"><button class="btn secondary" onclick="resetRoute()">Volver</button><button class="btn primary" onclick="confirmMapping()">Continuar</button></div>
+    </div>
+
+    <div class="card hidden" id="routeCard">
+      <div class="section-head"><div><h2 class="title">Rutero cargado</h2><div class="subtitle">Filtros dependientes y detalle de registros.</div></div><button class="btn secondary" onclick="goStep(1)">← Maestro</button></div>
+      <div class="stats" id="routeStats"></div>
+      <div class="filters" id="routeFilters"></div>
+      <div class="table-wrap"><table><thead id="routeHead"></thead><tbody id="routeBody"></tbody></table></div>
+      <div class="actions actions"><button class="btn primary" onclick="goStep(3)">Continuar a parámetros →</button></div>
+    </div>
+  </section>
+
+  <section id="step3" class="hidden">
+    <div class="card">
+      <div class="section-head"><div><h2 class="title">Parámetros de valorización</h2><div class="subtitle">Configura las reglas que determinan qué desplazamientos generan pago.</div></div><button class="btn secondary" onclick="goStep(2)">← Volver</button></div>
+      <div class="param-grid">
+        <div class="field"><label>Distancia máxima caminable (metros)</label><input id="maxWalk" type="text" inputmode="numeric" pattern="[0-9]*" value="0" oninput="soloEnteros(this)"><div class="small">Distancia que puede caminar la persona sin generar pago.</div></div>
+        <div class="field"><label>Cantidad desplazamientos sin pago</label><input id="freeTrips" type="text" inputmode="numeric" pattern="[0-9]*" value="0" oninput="soloEnteros(this)"><div class="small">Cantidad de desplazamientos de la ruta que no se pagan.</div></div>
+      </div>
+
+      <div class="param-grid" style="margin-top:14px">
+        <div class="param-box">
+          <label class="check"><input id="payFirstIntercity" type="checkbox"> Pagar si el primer desplazamiento es intermunicipal</label>
+          <div class="small" style="margin-top:8px">La lógica específica de este desplazamiento se ajustará posteriormente.</div>
+        </div>
+        <div class="param-box">
+          <div class="small" style="margin-top:0">Los desplazamientos que puedan calcularse se valorizan automáticamente.</div>
+          <label class="check" style="margin-top:12px"><input id="payFarReturn" type="checkbox" onchange="togglePersonCityRequirement()"> Pagar retorno</label>
+          <div class="small" style="margin-top:6px">Genera pago adicional si el último PDV fue en una ciudad diferente a la ciudad del mercaderista.</div>
+        </div>
+      </div>
+
+      <div class="actions actions"><button id="btnRunValuation" type="button" class="btn primary">Valorizar ruta →</button></div>
+    </div>
+  </section>
+
+  <section id="step4" class="hidden">
+    <div class="card">
+      <div class="section-head"><div><h2 class="title">Valorización de la ruta</h2><div class="subtitle" id="resultSubtitle">Rutero completo cargado + detalle de valorización.</div></div><div class="control-row"><button class="btn secondary" onclick="goStep(3)">← Parámetros</button><button id="btnDownloadReport" class="btn secondary" onclick="downloadReport()">Descargar informe</button><button id="btnDownloadResult" class="btn primary" onclick="downloadResult()">Descargar resultado</button></div></div>
+      <div id="valuationErrors" class="hidden"></div>
+      <div id="missingMasterPanel" class="hidden"></div>
+      <div class="filters" id="resultFilters"></div>
+      <div class="result-grid" id="resultStats"></div>
+      <div class="table-wrap"><table><thead id="resultHead"></thead><tbody id="resultBody"></tbody></table></div>
+    </div>
+  </section>
+</div>
+
+<div class="modal-bg" id="masterModal">
+  <div class="modal">
+    <h3 id="modalTitle">Agregar trayecto</h3>
+    <div class="small" style="margin-bottom:14px">ORIGEN y DESTINO se guardarán en MAYÚSCULAS y SIN TILDES.</div>
+    <div class="form-grid">
+      <div class="field"><label>Tipo de transporte</label><select id="mType"></select></div>
+      <div class="field"><label>Valor</label><input id="mValue" type="number" min="0" step="1"></div>
+      <div class="field"><label>Origen</label><input id="mOrigin" type="text" placeholder="MAYÚSCULAS SIN TILDES"></div>
+      <div class="field"><label>Destino</label><input id="mDest" type="text" placeholder="MAYÚSCULAS SIN TILDES"></div>
+    </div>
+    <div class="actions actions"><button class="btn secondary" onclick="closeMasterModal()">Cancelar</button><button class="btn primary" onclick="saveMaster()">Guardar</button></div>
+  </div>
+</div>
+<div class="notice" id="notice"></div>
+
+<script>
+let master=[], masterHeaders=[], masterFileName="MAESTRO_VALORES.xlsx", editingIndex=-1;
+let routes=[], routeHeaders=[], mapFields={}, routeFileName="RUTERO_VALORIZADO.xlsx", routeFiltered=[];
+let resultRows=[];
+
+const TRANSPORT_CANDIDATES=[
+"FLUVIAL","TAXI","TRANSPORTE POR APLICACION","MOTOCICLETA","MOTOCICLETA PARTICULAR","TRANSPORTE PUBLICO"
+];
+
+const requiredFields=[
+"PUNTO DE VENTA","CIUDAD","MERCADERISTA","FECHA VISITA","ORDEN"
+];
+
+function clean(v){
+  if(v===null||v===undefined)return "";
+  return String(v).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase().replace(/\s+/g," ").trim();
+}
+// Normaliza y homologa nombres de ciudades de la misma manera
+// en el maestro de tarifas, el rutero y la ciudad base del mercaderista.
+function normalizeCity(v){
+  if(v===null||v===undefined)return "";
+  const city=String(v).normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .toUpperCase().replace(/[.,]/g,"").replace(/\s+/g," ").trim();
+
+  // Equivalencias explícitas solicitadas.
+  const cityAliases={
+    "BOGOTA DC":"BOGOTA",
+    "CARTAGENA":"CARTAGENA DE INDIAS"
+  };
+  return cityAliases[city]||city;
+}
+function money(v){
+  if(v===null||v===undefined||v==="")return "";
+  if(typeof v==="number")return v;
+  let s=String(v).trim().replace(/[^0-9,.-]/g,"");
+  if(!s)return "";
+  const lastComma=s.lastIndexOf(","), lastDot=s.lastIndexOf(".");
+  if(lastComma>=0 && lastDot>=0){
+    if(lastComma>lastDot){
+      s=s.replace(/\./g,"").replace(",",".");
+    }else{
+      s=s.replace(/,/g,"");
+    }
+  }else if(lastComma>=0){
+    const decimals=s.length-lastComma-1;
+    s=decimals===3?s.replace(/,/g,""):s.replace(",",".");
+  }else if(lastDot>=0){
+    const decimals=s.length-lastDot-1;
+    s=decimals===3?s.replace(/\./g,""):s;
+  }
+  const n=Number(s);
+  return Number.isFinite(n)?n:"";
+}
+function fmtMoney(v){return v===""||v==null?"—":"$ "+Number(v).toLocaleString("es-CO",{maximumFractionDigits:0})}
+function showNotice(msg){
+  const n=document.getElementById("notice");n.textContent=msg;n.style.display="block";
+  setTimeout(()=>n.style.display="none",2200);
+}
+function goStep(n){
+  if(n===4 && !resultRows.length){showNotice('Primero ejecuta la valorización');return}
+  if(n===2 && !master.length){showNotice("Primero carga el maestro de valores");return}
+  if(n>=3 && !routes.length){showNotice("Primero carga el rutero");return}
+  [1,2,3,4].forEach(i=>document.getElementById("step"+i).classList.toggle("hidden",i!==n));
+  [1,2,3,4].forEach(i=>{
+    const el=document.getElementById("s"+i);
+    el.classList.toggle("active",i===n);el.classList.toggle("done",i<n);
+  });
+  const captions={
+    1:"PASO 1 DE 4 · CARGAR VALORES",
+    2:"PASO 2 DE 4 · CARGA DE RUTERO",
+    3:"PASO 3 DE 4 · PARÁMETROS DE VALORIZACIÓN",
+    4:"PASO 4 DE 4 · VALORIZACIÓN DE LA RUTA"
+  };
+  document.getElementById("stepCaption").textContent=captions[n];
+}
+function readFile(file,cb){
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      let wb;
+      if(file.name.toLowerCase().endsWith(".csv")){
+        const text=new TextDecoder("utf-8").decode(e.target.result);
+        wb=XLSX.read(text,{type:"string"});
+      }else wb=XLSX.read(e.target.result,{type:"array",cellDates:true});
+      const ws=wb.Sheets[wb.SheetNames[0]];
+      cb(XLSX.utils.sheet_to_json(ws,{defval:""}),file.name);
+    }catch(err){alert("No fue posible leer el archivo.");console.error(err)}
+  };
+  reader.readAsArrayBuffer(file);
+}
+document.getElementById("masterFile").addEventListener("change",e=>{
+  if(e.target.files[0]) readFile(e.target.files[0],loadMaster);
+});
+function loadMaster(rows,name){
+  if(!rows.length){alert("El archivo no contiene registros.");return}
+  const original=Object.keys(rows[0]);
+  const findH=(arr,keys)=>arr.find(h=>keys.includes(clean(h)))||arr.find(h=>keys.some(k=>clean(h).includes(k)));
+  const hType=findH(original,["TIPO TRANSPORTE","TIPO"]);
+  const hOrg=findH(original,["ORIGEN"]);
+  const hDest=findH(original,["DESTINO"]);
+  const hVal=findH(original,["VALOR","VALOR TRAYECTO"]);
+  if(!hType||!hOrg||!hDest||!hVal){alert("No se identificaron las columnas requeridas del maestro.");return}
+  master=rows.map(r=>({tipo:clean(r[hType]),origen:normalizeCity(r[hOrg]),destino:normalizeCity(r[hDest]),valor:money(r[hVal]),_estado:"ORIGINAL"}));
+  masterFileName=name.replace(/\.(xlsx|xls|csv)$/i,"")+"_ACTUALIZADO.xlsx";
+  masterHeaders=[hType,hOrg,hDest,hVal];
+  document.getElementById("masterUploadCard").classList.add("hidden");
+  document.getElementById("masterCard").classList.remove("hidden");
+  renderMaster();
+}
+function masterTypes(){return [...new Set(master.map(x=>x.tipo).filter(Boolean))].sort()}
+function makeSelect(id,label,values,selected){
+  return `<div class="field"><label>${label}</label><select id="${id}" onchange="renderMaster()"><option value="">TODOS</option>${values.map(v=>`<option ${v===selected?"selected":""}>${esc(v)}</option>`).join("")}</select></div>`;
+}
+function renderMaster(){
+  const type=document.getElementById("mfType")?.value||"",org=document.getElementById("mfOrigin")?.value||"",dest=document.getElementById("mfDest")?.value||"";
+  const types=masterTypes();
+  const orgs=[...new Set(master.filter(x=>!type||x.tipo===type).map(x=>x.origen).filter(Boolean))].sort();
+  const dests=[...new Set(master.filter(x=>(!type||x.tipo===type)&&(!org||x.origen===org)).map(x=>x.destino).filter(Boolean))].sort();
+  document.getElementById("masterFilters").innerHTML=
+    makeSelect("mfType","TIPO TRANSPORTE",types,type)+
+    makeSelect("mfOrigin","ORIGEN",orgs,org)+
+    makeSelect("mfDest","DESTINO",dests,dest);
+  const t=document.getElementById("mfType"),o=document.getElementById("mfOrigin"),d=document.getElementById("mfDest");
+  t.value=type;o.value=org;d.value=dest;
+  const filtered=master.filter(x=>(!type||x.tipo===type)&&(!org||x.origen===org)&&(!dest||x.destino===dest));
+  // Los indicadores del Paso 1 fueron eliminados.
+  // Se mantienen únicamente filtros y tabla.
+  document.getElementById("masterBody").innerHTML=filtered.map(x=>{
+    const idx=master.indexOf(x);
+    return `<tr><td>${esc(x.tipo)}</td><td>${esc(x.origen)}</td><td>${esc(x.destino)}</td><td>${fmtMoney(x.valor)}</td><td><button class="btn secondary" onclick="editMaster(${idx})">Editar</button></td></tr>`
+  }).join("")||`<tr><td colspan="5" class="empty">No hay registros para los filtros seleccionados.</td></tr>`;
+}
+function openMasterModal(idx=-1){
+  editingIndex=idx;
+  document.getElementById("modalTitle").textContent=idx<0?"Agregar trayecto":"Editar trayecto";
+  document.getElementById("mType").innerHTML=masterTypes().map(x=>`<option>${esc(x)}</option>`).join("");
+  if(idx>=0){
+    const x=master[idx];mType.value=x.tipo;mOrigin.value=x.origen;mDest.value=x.destino;mValue.value=x.valor;
+  }else{mOrigin.value="";mDest.value="";mValue.value="";}
+  document.getElementById("masterModal").style.display="flex";
+}
+function editMaster(idx){openMasterModal(idx)}
+function closeMasterModal(){document.getElementById("masterModal").style.display="none"}
+function saveMaster(){
+  const tipo=clean(mType.value),origen=clean(mOrigin.value),destino=clean(mDest.value),valor=money(mValue.value);
+  if(!tipo||!origen||!destino||valor===""){showNotice("Completa todos los campos");return}
+  const key=`${tipo}|${origen}|${destino}`;
+  const duplicate=master.findIndex((x,i)=>i!==editingIndex&&`${x.tipo}|${x.origen}|${x.destino}`===key);
+  if(duplicate>=0 && editingIndex<0){showNotice("El trayecto ya existe en el maestro");return}
+  if(editingIndex<0)master.push({tipo,origen,destino,valor,_estado:"AGREGADO"});
+  else master[editingIndex]={...master[editingIndex],tipo,origen,destino,valor,_estado:"MODIFICADO"};
+  closeMasterModal();renderMaster();showNotice(editingIndex<0?"Trayecto creado":"Trayecto actualizado");
+}
+function downloadMaster(){
+  const data=master.map(x=>({"TIPO TRANSPORTE":clean(x.tipo),"ORIGEN":normalizeCity(x.origen),"DESTINO":normalizeCity(x.destino),"VALOR":Number(x.valor)||0}));
+  const ws=XLSX.utils.json_to_sheet(data),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"VALORES");
+  XLSX.writeFile(wb,masterFileName);
+}
+
+document.getElementById("routeFile").addEventListener("change",e=>{
+  if(e.target.files[0]) readFile(e.target.files[0],loadRoute);
+});
+function findRouteHeader(headers,patterns){
+  let exact=headers.find(h=>patterns.includes(clean(h)));if(exact)return exact;
+  return headers.find(h=>patterns.some(p=>clean(h).includes(p)));
+}
+function loadRoute(rows,name){
+  if(!rows.length){alert("El rutero no contiene registros.");return}
+  routeFileName=name.replace(/\.(xlsx|xls|csv)$/i,"")+"_VALORIZADO.xlsx";
+  routeHeaders=Object.keys(rows[0]);
+  routes=rows.map(r=>({...r}));
+  mapFields={
+    pv:findRouteHeader(routeHeaders,["PUNTO DE VENTA","PDV"]),
+    regional:findRouteHeader(routeHeaders,["REGIONAL"]),
+    ciudad:findRouteHeader(routeHeaders,["CIUDAD"]),
+    persona:findRouteHeader(routeHeaders,["MERCADERISTA","PERSONA"]),
+    fecha:findRouteHeader(routeHeaders,["FECHA VISITA","FECHA"]),
+    orden:findRouteHeader(routeHeaders,["ORDEN"]),
+    tipo:findRouteHeader(routeHeaders,["TIPO DE TRANSPORTE","TIPO TRANSPORTE"]),
+    distancia:findRouteHeader(routeHeaders,["DISTANCIA SIGUIENTE PDV","DISTANCIA"]),
+    lat:findRouteHeader(routeHeaders,["LATITUD"]),
+    lon:findRouteHeader(routeHeaders,["LONGITUD","LON","LONG"]),
+    ciudadPersona:findRouteHeader(routeHeaders,["CIUDAD PERSONA"])
+  };
+  renderMapping();
+  document.getElementById("routeUploadCard").classList.add("hidden");
+  document.getElementById("mappingCard").classList.remove("hidden");
+}
+function renderMapping(){
+  const labels={pv:"PUNTO DE VENTA",regional:"REGIONAL",ciudad:"CIUDAD",persona:"MERCADERISTA",fecha:"FECHA VISITA",orden:"ORDEN",tipo:"TIPO DE TRANSPORTE",distancia:"DISTANCIA SIGUIENTE PDV",lat:"LATITUD",lon:"LONGITUD",ciudadPersona:"CIUDAD PERSONA"};
+  document.getElementById("mappingGrid").innerHTML=Object.entries(labels).map(([k,l])=>{
+    const required=["pv","ciudad","persona","fecha","orden"].includes(k);
+    return `<div class="field"><label>${l}${required?" *":""}</label><select id="map_${k}"><option value="">-- NO IDENTIFICADA --</option>${routeHeaders.map(h=>`<option value="${esc(h)}" ${h===mapFields[k]?"selected":""}>${esc(h)}</option>`).join("")}</select></div>`
+  }).join("");
+}
+function confirmMapping(){
+  const keys=["pv","ciudad","persona","fecha","orden"];
+  keys.forEach(k=>mapFields[k]=document.getElementById("map_"+k).value);
+  ["regional","tipo","distancia","lat","lon","ciudadPersona"].forEach(k=>mapFields[k]=document.getElementById("map_"+k).value);
+  const missing=keys.filter(k=>!mapFields[k]);
+  if(missing.length){showNotice("Faltan columnas obligatorias");return}
+  if((document.getElementById("payFarReturn")?.checked || document.getElementById("payFirstIntercity")?.checked) && !mapFields.ciudadPersona){
+    showNotice("Para activar pagos de primer desplazamiento o retorno debes seleccionar la columna CIUDAD PERSONA");
+    return;
+  }
+  routes=routes.map(r=>({...r,_tipo:clean(mapFields.tipo?r[mapFields.tipo]:"")||"TRANSPORTE PUBLICO",_ciudadPersona:normalizeCity(mapFields.ciudadPersona?r[mapFields.ciudadPersona]:"")}));
+  document.getElementById("mappingCard").classList.add("hidden");
+  document.getElementById("routeCard").classList.remove("hidden");
+  renderRoute();
+}
+function routeValue(r,k){if(k==="tipo")return r._tipo;if(k==="ciudadPersona")return normalizeCity(r._ciudadPersona||"");if(k==="ciudad")return normalizeCity(mapFields.ciudad?r[mapFields.ciudad]:"");return mapFields[k]?r[mapFields[k]]:""}
+function routeFilters(){
+  const defs=[["rfRegional","REGIONAL","regional"],["rfPerson","MERCADERISTA","persona"],["rfCity","CIUDAD","ciudad"],["rfDate","FECHA VISITA","fecha"],["rfType","TIPO TRANSPORTE","tipo"]];
+  const current={};defs.forEach(d=>current[d[2]]=document.getElementById(d[0])?.value||"");
+  let html="";
+  defs.forEach(([id,label,key])=>{
+    const base=routes.filter(r=>defs.every(d=>d[2]===key||!current[d[2]]||clean(routeValue(r,d[2]))===clean(current[d[2]])));
+    let arr=base.map(r=>clean(routeValue(r,key))).filter(Boolean);
+    arr=[...new Set(arr)].sort();
+    const selected=arr.includes(clean(current[key]))?clean(current[key]):"";
+    html+=`<div class="field"><label>${label}</label><select id="${id}" onchange="renderRoute()"><option value="">TODOS</option>${arr.map(v=>`<option value="${esc(v)}" ${v===selected?"selected":""}>${esc(v)}</option>`).join("")}</select></div>`;
+  });
+  document.getElementById("routeFilters").innerHTML=html;
+}
+function renderRoute(){
+  routeFilters();
+  const f={regional:document.getElementById("rfRegional")?.value||"",persona:document.getElementById("rfPerson")?.value||"",ciudad:document.getElementById("rfCity")?.value||"",fecha:document.getElementById("rfDate")?.value||"",tipo:document.getElementById("rfType")?.value||""};
+  routeFiltered=routes.filter(r=>Object.entries(f).every(([k,v])=>!v||clean(routeValue(r,k))===clean(v)));
+  const uniquePDV=new Set(routeFiltered.map(r=>clean(routeValue(r,"pv"))).filter(Boolean)).size;
+  const persons=new Set(routeFiltered.map(r=>clean(routeValue(r,"persona"))).filter(Boolean)).size;
+  const visits=new Set(routeFiltered.map(r=>`${clean(routeValue(r,"persona"))}|${clean(routeValue(r,"fecha"))}`)).size;
+  const routeCount=new Set(routeFiltered.map(r=>`${clean(routeValue(r,"persona"))}|${clean(routeValue(r,"fecha"))}`)).size;
+  document.getElementById("routeStats").innerHTML=[
+    ["PDV",uniquePDV],["Personas",persons],["Visitas",visits],["Rutas",routeCount],
+    ["Ciudades",new Set(routeFiltered.map(r=>clean(routeValue(r,"ciudad")))).size],["Regionales",new Set(routeFiltered.map(r=>clean(routeValue(r,"regional")))).size]
+  ].map(x=>`<div class="stat"><b>${x[1]}</b><span>${x[0]}</span></div>`).join("");
+  const cols=[mapFields.pv,mapFields.regional,mapFields.ciudad,mapFields.persona,mapFields.fecha,mapFields.orden,"TIPO TRANSPORTE"];
+  document.getElementById("routeHead").innerHTML="<tr>"+cols.map(x=>`<th>${esc(x)}</th>`).join("")+"</tr>";
+  document.getElementById("routeBody").innerHTML=routeFiltered.map(r=>"<tr>"+cols.map(x=>`<td>${esc(x==="TIPO TRANSPORTE"?r._tipo:r[x])}</td>`).join("")+"</tr>").join("")||`<tr><td colspan="7" class="empty">Sin registros.</td></tr>`;
+}
+function resetRoute(){
+  routes=[];mapFields={};
+  document.getElementById("mappingCard").classList.add("hidden");
+  document.getElementById("routeCard").classList.add("hidden");
+  document.getElementById("routeUploadCard").classList.remove("hidden");
+}
+function haversine(a,b,c,d){
+  const R=6371,rad=Math.PI/180;
+  const dLat=(c-a)*rad,dLon=(d-b)*rad;
+  const x=Math.sin(dLat/2)**2+Math.cos(a*rad)*Math.cos(c*rad)*Math.sin(dLon/2)**2;
+  return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
+}
+function num(v){
+  if(v===null||v===undefined||v==="")return null;
+  if(typeof v==="number")return Number.isFinite(v)?v:null;
+  let s=String(v).trim().replace(/[^0-9,.-]/g,"");
+  if(!s)return null;
+  const lc=s.lastIndexOf(","), ld=s.lastIndexOf(".");
+  if(lc>=0 && ld>=0){
+    if(lc>ld)s=s.replace(/\./g,"").replace(",",".");
+    else s=s.replace(/,/g,"");
+  }else if(lc>=0){
+    const dec=s.length-lc-1; s=dec===3?s.replace(/,/g,""):s.replace(",",".");
+  }else if(ld>=0){
+    const dec=s.length-ld-1; if(dec===3)s=s.replace(/\./g,"");
+  }
+  const n=Number(s);return Number.isFinite(n)?n:null;
+}
+function routeKey(tipo,origen,destino){return `${clean(tipo)}|${clean(origen)}|${clean(destino)}`}
+function findMaster(tipo,origen,destino){
+  const key=routeKey(tipo,origen,destino);
+  return master.find(x=>routeKey(x.tipo,x.origen,x.destino)===key)||null;
+}
+function soloEnteros(el){
+  el.value=String(el.value||'').replace(/[^0-9]/g,'');
+}
+function togglePersonCityRequirement(){
+  const checked=!!document.getElementById("payFarReturn")?.checked || !!document.getElementById("payFirstIntercity")?.checked;
+  const cityField=document.getElementById("map_ciudadPersona");
+  if(cityField){
+    cityField.style.borderColor = checked ? "#1769e8" : "";
+  }
+}
+function toggleTravelDistance(which){
+  const checked=document.getElementById(which==='first'?'payFirst':'payLast').checked;
+  document.getElementById(which==='first'?'firstDistanceWrap':'lastDistanceWrap').classList.toggle('hidden',!checked);
+}
+function getParams(){
+  return {
+    maxWalk:num(document.getElementById('maxWalk')?.value)||0,
+    freeTrips:Math.max(0,parseInt(document.getElementById('freeTrips')?.value||'0',10)||0),
+    payFirst:true,
+    payFirstIntercity:!!document.getElementById('payFirstIntercity')?.checked,
+    payFarReturn:!!document.getElementById('payFarReturn')?.checked
+  };
+}
+function normalizeDistanceKm(v){
+  const n=num(v); return n===null?null:n;
+}
+function isIntercity(origin,dest){return !!origin&&!!dest&&clean(origin)!==clean(dest)}
+function uniqueMissing(){
+  const seen=new Set(), out=[];
+  resultRows.forEach(r=>{
+    if(r['ESTADO VALORIZACION']!=='SIN VALOR') return;
+    const key=routeKey(r['TIPO TRANSPORTE'],r['CIUDAD ORIGEN'],r['CIUDAD DESTINO']);
+    if(seen.has(key)) return;
+    seen.add(key);
+    out.push({tipo:r['TIPO TRANSPORTE'],origen:r['CIUDAD ORIGEN'],destino:r['CIUDAD DESTINO'],valor:''});
+  });
+  return out;
+}
+function buildMissingMasterExcel(){
+  const missing=uniqueMissing();
+  if(!missing.length){showNotice('No hay trayectos sin mapear');return;}
+  const rows=missing.map(x=>({'TIPO TRANSPORTE':x.tipo,'ORIGEN':x.origen,'DESTINO':x.destino,'VALOR':''}));
+  const ws=XLSX.utils.json_to_sheet(rows,{header:['TIPO TRANSPORTE','ORIGEN','DESTINO','VALOR']});
+  ws['!cols']=[{wch:25},{wch:24},{wch:24},{wch:16}];
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'VALORES');
+  XLSX.writeFile(wb,'DV_ROUTE_VALUATION_TRAYECTOS_NO_MAPEADOS.xlsx');
+  showNotice('Plantilla de trayectos no mapeados generada');
+}
+function renderValuationErrors(){
+  const missing=uniqueMissing();
+  const errors=[];
+  const noDist=resultRows.filter(r=>r['ESTADO VALORIZACION']==='NO VALORIZADO').length;
+  if(missing.length) errors.push(`Hay ${missing.length} trayecto(s) que no existen en el maestro de valores.`);
+  if(noDist) errors.push(`Hay ${noDist} desplazamiento(s) sin distancia disponible.`);
+  const panel=document.getElementById('valuationErrors');
+  if(!errors.length){panel.className='hidden';panel.innerHTML='';}
+  else {panel.className='error-panel';panel.innerHTML='<div class="error-title">Revisión requerida</div><div class="error-list">'+errors.map(e=>`<div class="error-item">${esc(e)}<span class="status-badge err">REVISAR</span></div>`).join('')+'</div>';}
+  const mp=document.getElementById('missingMasterPanel');
+  if(missing.length){
+    mp.className='missing-panel';
+    mp.innerHTML=`<div class="error-title" style="color:#29415f">Trayectos no mapeados</div><div class="small">Descarga la plantilla, agrega los valores y vuelve a cargarla aquí. Los registros se sumarán al maestro original.</div><div class="missing-actions"><button class="btn secondary" type="button" onclick="buildMissingMasterExcel()">Descargar trayectos no mapeados</button><label class="btn primary" for="missingMasterFile">Cargar valores completados</label><input id="missingMasterFile" type="file" accept=".xlsx,.xls,.csv" style="display:none"></div><div class="small" style="margin-top:10px">La plantilla conserva exactamente: TIPO TRANSPORTE · ORIGEN · DESTINO · VALOR.</div>`;
+    document.getElementById('missingMasterFile').addEventListener('change',e=>{if(e.target.files[0])readFile(e.target.files[0],mergeAdditionalMaster);});
+  }else{mp.className='hidden';mp.innerHTML='';}
+}
+function mergeAdditionalMaster(rows,name){
+  if(!rows.length){showNotice('El archivo no contiene registros');return;}
+  const headers=Object.keys(rows[0]);
+  const findH=(arr,keys)=>arr.find(h=>keys.includes(clean(h)))||arr.find(h=>keys.some(k=>clean(h).includes(k)));
+  const hType=findH(headers,['TIPO TRANSPORTE','TIPO']),hOrg=findH(headers,['ORIGEN']),hDest=findH(headers,['DESTINO']),hVal=findH(headers,['VALOR','VALOR TRAYECTO']);
+  if(!hType||!hOrg||!hDest||!hVal){showNotice('La plantilla debe tener TIPO TRANSPORTE, ORIGEN, DESTINO y VALOR');return;}
+  let added=0,updated=0,invalid=0;
+  rows.forEach(r=>{
+    const tipo=clean(r[hType]),origen=clean(r[hOrg]),destino=clean(r[hDest]),valor=money(r[hVal]);
+    if(!tipo||!origen||!destino||valor===''){invalid++;return;}
+    const idx=master.findIndex(x=>routeKey(x.tipo,x.origen,x.destino)===routeKey(tipo,origen,destino));
+    if(idx>=0){master[idx]={...master[idx],valor,_estado:master[idx]._estado==='ORIGINAL'?'MODIFICADO':master[idx]._estado};updated++;}
+    else {master.push({tipo,origen,destino,valor,_estado:'AGREGADO'});added++;}
+  });
+  renderMaster();
+  showNotice(`Valores integrados: ${added} nuevos · ${updated} actualizados${invalid?' · '+invalid+' sin valor':''}`);
+  setTimeout(()=>runValuation(),250);
+}
+function applyPaymentRules(distanceKm, pos, totalTrips, origin, destination, params){
+  if(distanceKm===null) return {pay:false,reason:'DISTANCIA NO DISPONIBLE'};
+  if(pos===0) return {pay:true,reason:'PRIMER VIAJE PAGADO'};
+  const dMeters=distanceKm*1000;
+  if(params.maxWalk>0 && dMeters<=params.maxWalk) return {pay:false,reason:'DENTRO DE DISTANCIA CAMINABLE'};
+  if(pos < params.freeTrips) return {pay:false,reason:'DESPLAZAMIENTO INCLUIDO EN CANTIDAD SIN PAGO'};
+  return {pay:true,reason:'DESPLAZAMIENTO PAGABLE'};
+}
+function runValuation(){
+  try{
+    if(!Array.isArray(routes)||!routes.length){showNotice('Primero carga y valida el rutero');return}
+    if((document.getElementById("payFarReturn")?.checked || document.getElementById("payFirstIntercity")?.checked) && !mapFields.ciudadPersona){
+      showNotice("Para activar pagos de primer desplazamiento o retorno debes seleccionar la columna CIUDAD PERSONA");
+      return;
+    }
+    const params=getParams(), grouped={};
+    routes.forEach((r,i)=>{
+      const key=`${clean(routeValue(r,'persona'))}|${clean(routeValue(r,'fecha'))}`;
+      (grouped[key]??=[]).push({r,i});
+    });
+    resultRows=[];
+    Object.values(grouped).forEach(items=>{
+      items.sort((a,b)=>(Number(routeValue(a.r,'orden'))||0)-(Number(routeValue(b.r,'orden'))||0));
+      let cumulative=0;
+      const trips=Math.max(items.length-1,0);
+      const first=items[0]?.r;
+      const firstCity=first?clean(routeValue(first,'ciudad')):'';
+      const baseCity=first?clean(routeValue(first,'ciudadPersona')):'';
+      const firstType=first?first._tipo:'';
+
+      // Fila adicional de salida: orden 0, desde la ciudad base hasta el primer PDV.
+      if(first && params.payFirstIntercity && baseCity && firstCity && baseCity!==firstCity){
+        const m=findMaster(firstType,baseCity,firstCity);
+        const extra={...first};
+        if(mapFields.orden) extra[mapFields.orden]=0;
+        resultRows.push({
+          ...extra,
+          'CIUDAD ORIGEN':baseCity,
+          'CIUDAD DESTINO':firstCity,
+          'DISTANCIA SIGUIENTE PDV':'',
+          'VALOR TRAYECTO':m?m.valor:'',
+          'DISTANCIA TOTAL RECORRIDA':0,
+          'ESTADO VALORIZACION':m?'VALORIZADO':'SIN VALOR',
+          'OBSERVACION VALORIZACION':m?'PRIMER DESPLAZAMIENTO INTERMUNICIPAL':'NO EXISTE COMBINACION EN EL MAESTRO: '+baseCity+' → '+firstCity,
+          'TIPO TRANSPORTE':firstType,
+          _esDesplazamientoAdicional:true
+        });
+      }
+
+      items.forEach((item,pos)=>{
+        const r=item.r,next=items[pos+1]?.r;
+        const origin=clean(routeValue(r,'ciudad'));
+        let destination=next?clean(routeValue(next,'ciudad')):'';
+        let distance=null;
+        let value='',status='NO APLICA',obs='';
+        if(next){
+          if(mapFields.distancia && r[mapFields.distancia]!=='' && r[mapFields.distancia]!==null)
+            distance=normalizeDistanceKm(r[mapFields.distancia]);
+          if(distance===null && mapFields.lat&&mapFields.lon){
+            const a=num(r[mapFields.lat]),b=num(r[mapFields.lon]);
+            const c=num(next[mapFields.lat]),d=num(next[mapFields.lon]);
+            if([a,b,c,d].every(x=>x!==null)) distance=haversine(a,b,c,d);
+          }
+          if(distance!==null) cumulative+=distance;
+          const payment=applyPaymentRules(distance,pos,trips,origin,destination,params);
+          if(distance===null){status='NO VALORIZADO';obs='DISTANCIA NO DISPONIBLE';}
+          else if(!payment.pay){status='NO APLICA';obs=payment.reason;}
+          else{
+            const m=findMaster(r._tipo,origin,destination);
+            if(m){value=m.valor;status='VALORIZADO';}
+            else{status='SIN VALOR';obs='NO EXISTE COMBINACION EN EL MAESTRO';}
+          }
+        }else{obs='ULTIMO PDV DE LA RUTA';}
+
+        // El retorno reemplaza el registro terminal sin crear columnas adicionales.
+        if(pos===items.length-1 && params.payFarReturn && baseCity && origin && origin!==baseCity){
+          destination=baseCity;
+          const m=findMaster(r._tipo,origin,baseCity);
+          if(m){value=m.valor;status='VALORIZADO';obs='RETORNO A CIUDAD BASE DEL MERCADERISTA';}
+          else{value='';status='SIN VALOR';obs='NO EXISTE COMBINACION EN EL MAESTRO: '+origin+' → '+baseCity;}
+        }
+        resultRows.push({
+          ...r,
+          'CIUDAD ORIGEN':origin,
+          'CIUDAD DESTINO':destination,
+          'DISTANCIA SIGUIENTE PDV':distance===null?'':Number(distance.toFixed(3)),
+          'VALOR TRAYECTO':value,
+          'DISTANCIA TOTAL RECORRIDA':Number(cumulative.toFixed(3)),
+          'ESTADO VALORIZACION':status,
+          'OBSERVACION VALORIZACION':obs,
+          'TIPO TRANSPORTE':r._tipo,
+          _esDesplazamientoAdicional:false
+        });
+      });
+    });
+    renderResults();renderValuationErrors();
+    [1,2,3,4].forEach(i=>document.getElementById('step'+i).classList.toggle('hidden',i!==4));
+    [1,2,3,4].forEach(i=>{
+      const el=document.getElementById('s'+i);
+      el.classList.toggle('active',i===4);
+      el.classList.toggle('done',i<4);
+    });
+    document.getElementById('stepCaption').textContent='PASO 4 DE 4 · VALORIZACIÓN DE LA RUTA';
+  }catch(err){
+    console.error('Error en valorización:',err);
+    showNotice('Error técnico: '+(err.message||'revise los datos'));
+  }
+}
+function resultFilters(){
+  const defs=[
+    ["resRegional","REGIONAL","regional"],
+    ["resPerson","MERCADERISTA","persona"],
+    ["resDate","FECHA VISITA","fecha"]
+  ];
+  const current={};
+  defs.forEach(d=>current[d[2]]=document.getElementById(d[0])?.value||"");
+  let html="";
+  defs.forEach(([id,label,key])=>{
+    const base=resultRows.filter(r=>defs.every(d=>d[2]===key||!current[d[2]]||clean(routeValue(r,d[2]))===clean(current[d[2]])));
+    const values=[...new Set(base.map(r=>clean(routeValue(r,key))).filter(Boolean))].sort();
+    const selected=values.includes(clean(current[key]))?clean(current[key]):"";
+    html+=`<div class="field"><label>${label}</label><select id="${id}" onchange="renderResults()"><option value="">TODOS</option>${values.map(v=>`<option value="${esc(v)}" ${v===selected?"selected":""}>${esc(v)}</option>`).join("")}</select></div>`;
+  });
+  const container=document.getElementById("resultFilters");
+  if(container) container.innerHTML=html;
+}
+
+function renderResults(){
+  resultFilters();
+
+  const f={
+    regional:document.getElementById("resRegional")?.value||"",
+    persona:document.getElementById("resPerson")?.value||"",
+    fecha:document.getElementById("resDate")?.value||""
+  };
+
+  const filtered=resultRows.filter(r=>
+    Object.entries(f).every(([k,v])=>!v||clean(routeValue(r,k))===clean(v))
+  );
+
+  const total=filtered.reduce((s,r)=>s+(Number(r["VALOR TRAYECTO"])||0),0);
+  const dist=filtered.reduce((s,r)=>s+(Number(r["DISTANCIA SIGUIENTE PDV"])||0),0);
+  const paid=filtered.filter(r=>r["ESTADO VALORIZACION"]==="VALORIZADO").length;
+  const routesN=new Set(filtered.map(r=>`${clean(routeValue(r,"persona"))}|${clean(routeValue(r,"fecha"))}`)).size;
+  const uniquePDV=new Set(filtered.map(r=>clean(routeValue(r,"pv"))).filter(Boolean)).size;
+  const visits=filtered.filter(r=>!r._esDesplazamientoAdicional).length;
+  const displacementCount=filtered.filter(r=>clean(r["CIUDAD DESTINO"])).length;
+
+  document.getElementById("resultStats").innerHTML=[
+    ["PDV",uniquePDV],
+    ["Rutas",routesN],
+    ["Distancia total",dist.toFixed(2)+" km"],
+    ["Desplazamientos",displacementCount],
+    ["Valorizados",paid],
+    ["Costo total",fmtMoney(total)],
+    ["Promedio/visita",fmtMoney(visits?total/visits:0)],
+    ["Distancia caminable",(num(document.getElementById("maxWalk")?.value)||0).toLocaleString("es-CO")+" m"]
+  ].map(x=>`<div class="stat"><b>${x[1]}</b><span>${x[0]}</span></div>`).join("");
+
+  // Tabla ligera: muestra únicamente los campos solicitados y los valores calculados.
+  // El Excel completo se conserva sin cambios en downloadResult().
+  const displayCols=[
+    {label:"NOMBRE COMERCIAL",source:routeHeaders.find(h=>clean(h)==="NOMBRE COMERCIAL")||mapFields.pv},
+    {label:"REGIONAL",source:routeHeaders.find(h=>clean(h)==="REGIONAL")||mapFields.regional},
+    {label:"POBLACION",source:routeHeaders.find(h=>clean(h)==="POBLACION")||mapFields.ciudad},
+    {label:"RUTA",source:routeHeaders.find(h=>clean(h)==="RUTA")},
+    {label:"DIA_VISITA",source:routeHeaders.find(h=>clean(h)==="DIA_VISITA")||mapFields.fecha},
+    {label:"SECUENCIA",source:routeHeaders.find(h=>clean(h)==="SECUENCIA")||mapFields.orden},
+    {label:"TIPO TRANSPORTE",value:r=>r["TIPO TRANSPORTE"]},
+    {label:"CIUDAD ORIGEN",value:r=>r["CIUDAD ORIGEN"]},
+    {label:"CIUDAD DESTINO",value:r=>r["CIUDAD DESTINO"]},
+    {label:"DISTANCIA",value:r=>r["DISTANCIA SIGUIENTE PDV"]},
+    {label:"VALOR TRAYECTO",value:r=>r["VALOR TRAYECTO"]===""?"":fmtMoney(r["VALOR TRAYECTO"])}
+  ];
+  const cols=displayCols.filter(c=>c.value||c.source);
+  document.getElementById("resultHead").innerHTML="<tr>"+cols.map(c=>`<th>${esc(c.label)}</th>`).join("")+"</tr>";
+
+  document.getElementById("resultBody").innerHTML=filtered.map(r=>{
+    const isOrderZero=Number(routeValue(r,'orden'))===0;
+    const blankLabels=["NOMBRE COMERCIAL","REGIONAL","POBLACION","CIUDAD","PUNTO DE VENTA"];
+    const values=cols.map(c=>isOrderZero&&blankLabels.includes(c.label)?"":(c.value?c.value(r):(c.source===mapFields.ciudad?normalizeCity(r[c.source]):r[c.source])));
+    return "<tr>"+values.map(v=>`<td>${esc(v)}</td>`).join("")+"</tr>";
+  }).join("")||`<tr><td colspan="${cols.length}" class="empty">Sin registros para los filtros seleccionados.</td></tr>`;
+}
+
+function downloadResult(){
+  // El Excel conserva todas las columnas originales, en el mismo orden,
+  // y agrega al final únicamente las 5 columnas de valorización.
+  // Respeta los filtros seleccionados en el Paso 4.
+  const f={
+    regional:document.getElementById("resRegional")?.value||"",
+    persona:document.getElementById("resPerson")?.value||"",
+    fecha:document.getElementById("resDate")?.value||""
+  };
+  const filtered=resultRows.filter(r=>
+    Object.entries(f).every(([k,v])=>!v||clean(routeValue(r,k))===clean(v))
+  );
+
+  const cols=[...routeHeaders,"CIUDAD ORIGEN","CIUDAD DESTINO","DISTANCIA","VALOR","TIPO TRANSPORTE"];
+
+  const output=filtered.map(r=>{
+    const row={};
+    const isOrderZero=Number(routeValue(r,'orden'))===0;
+    const blankHeaders=["NOMBRE COMERCIAL","REGIONAL","POBLACION","CIUDAD","PUNTO DE VENTA"];
+    routeHeaders.forEach(h=>{
+      row[h]=isOrderZero&&blankHeaders.includes(clean(h))?"":(r[h]??"");
+      if(!isOrderZero&&h===mapFields.ciudad) row[h]=normalizeCity(r[h]);
+      if(!isOrderZero&&h===mapFields.ciudadPersona) row[h]=normalizeCity(r[h]);
+    });
+    row["CIUDAD ORIGEN"]=normalizeCity(r["CIUDAD ORIGEN"]);
+    row["CIUDAD DESTINO"]=normalizeCity(r["CIUDAD DESTINO"]);
+    row["DISTANCIA"]=r["DISTANCIA SIGUIENTE PDV"]===""?"":r["DISTANCIA SIGUIENTE PDV"];
+    row["VALOR"]=r["VALOR TRAYECTO"]===""?"":Number(r["VALOR TRAYECTO"]);
+    row["TIPO TRANSPORTE"]=clean(r["TIPO TRANSPORTE"]);
+    return row;
+  });
+
+  const ws=XLSX.utils.json_to_sheet(output,{header:cols});
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,"RUTERO VALORIZADO");
+  XLSX.writeFile(wb,routeFileName);
+}
+
+
+function downloadReport(){
+  // El informe es un HTML autónomo: conserva todos los registros valorizados,
+  // los filtros, las tarjetas y las mismas columnas de la tabla de resumen.
+  const reportData={
+    rows:resultRows,
+    routeHeaders,
+    mapFields,
+    maxWalk:num(document.getElementById("maxWalk")?.value)||0
+  };
+  const serialized=JSON.stringify(reportData).replace(/</g,"\\u003c").replace(/>/g,"\\u003e").replace(/&/g,"\\u0026");
+  const reportHtml=`<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Informe de valorización de rutas</title>
+<style>
+:root{font-family:Inter,Segoe UI,Arial,sans-serif;color:#172b4d;background:#f4f7fb}*{box-sizing:border-box}body{margin:0;padding:28px}.wrap{max-width:1600px;margin:auto}.top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:22px}.title{font-size:25px;font-weight:750;margin:0}.subtitle{color:#64748b;margin-top:6px}.panel{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:20px;margin-bottom:18px;box-shadow:0 3px 12px #0f172a08}.filters{display:grid;grid-template-columns:repeat(3,minmax(180px,1fr));gap:14px}.field label{display:block;font-size:12px;font-weight:700;color:#52627a;margin-bottom:7px}.field select{width:100%;padding:11px;border:1px solid #cbd5e1;border-radius:9px;background:white;color:#172b4d}.stats{display:grid;grid-template-columns:repeat(4,minmax(130px,1fr));gap:12px}.stat{border:1px solid #e2e8f0;border-radius:11px;padding:16px;background:#fbfdff}.stat b{display:block;font-size:22px;color:#155eef;margin-bottom:5px}.stat span{font-size:12px;color:#64748b;font-weight:650}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;white-space:nowrap;font-size:12px}th{background:#edf3fb;color:#334155;text-align:left;padding:12px;position:sticky;top:0}td{padding:11px 12px;border-bottom:1px solid #e8edf4}tbody tr:hover{background:#f8fbff}.count{color:#64748b;font-size:13px}.btn{border:0;border-radius:9px;padding:10px 14px;background:#155eef;color:white;font-weight:650;cursor:pointer}@media(max-width:850px){body{padding:14px}.stats{grid-template-columns:repeat(2,minmax(120px,1fr))}.filters{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}}
+</style></head><body><main class="wrap">
+<header class="top"><div><h1 class="title">Informe de valorización de rutas</h1><div class="subtitle">Informe interactivo · Filtra los registros y consulta los indicadores de la valorización.</div></div><button class="btn" onclick="window.print()">Imprimir informe</button></header>
+<section class="panel"><h2 style="font-size:17px;margin:0 0 16px">Filtros</h2><div class="filters" id="filters"></div></section>
+<section class="panel"><h2 style="font-size:17px;margin:0 0 14px">Indicadores</h2><div class="stats" id="stats"></div></section>
+<section class="panel"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px"><h2 style="font-size:17px;margin:0">Resumen de registros</h2><span class="count" id="count"></span></div><div class="table-wrap"><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div></section>
+</main><script>
+const DATA=${serialized};
+const rows=DATA.rows||[], headers=DATA.routeHeaders||[], fields=DATA.mapFields||{};
+const clean=v=>String(v??"").normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").toUpperCase().replace(/\\s+/g," ").trim();
+const value=(r,k)=>{const h=({regional:fields.regional,persona:fields.persona,fecha:fields.fecha,pv:fields.pv,ciudad:fields.ciudad,orden:fields.orden})[k];return h?r[h]:""};
+const money=v=>v===""||v==null?"—":"$ "+Number(v).toLocaleString("es-CO",{maximumFractionDigits:0});
+const esc=v=>String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const defs=[["regional","REGIONAL"],["persona","MERCADERISTA"],["fecha","FECHA VISITA"]];
+const displayCols=[
+ {label:"NOMBRE COMERCIAL",source:headers.find(h=>clean(h)==="NOMBRE COMERCIAL")||fields.pv},
+ {label:"REGIONAL",source:headers.find(h=>clean(h)==="REGIONAL")||fields.regional},
+ {label:"POBLACION",source:headers.find(h=>clean(h)==="POBLACION")||fields.ciudad},
+ {label:"RUTA",source:headers.find(h=>clean(h)==="RUTA")},
+ {label:"DIA_VISITA",source:headers.find(h=>clean(h)==="DIA_VISITA")||fields.fecha},
+ {label:"SECUENCIA",source:headers.find(h=>clean(h)==="SECUENCIA")||fields.orden},
+ {label:"TIPO TRANSPORTE",value:r=>r["TIPO TRANSPORTE"]},
+ {label:"CIUDAD ORIGEN",value:r=>r["CIUDAD ORIGEN"]},
+ {label:"CIUDAD DESTINO",value:r=>r["CIUDAD DESTINO"]},
+ {label:"DISTANCIA",value:r=>r["DISTANCIA SIGUIENTE PDV"]},
+ {label:"VALOR TRAYECTO",value:r=>r["VALOR TRAYECTO"]===""?"":money(r["VALOR TRAYECTO"])}
+].filter(c=>c.value||c.source);
+document.getElementById("thead").innerHTML="<tr>"+displayCols.map(c=>\`<th>\${esc(c.label)}</th>\`).join("")+"</tr>";
+function selected(){return Object.fromEntries(defs.map(([k])=>[k,document.getElementById("f_"+k)?.value||""]));}
+function render(){
+ const f=selected();
+ document.getElementById("filters").innerHTML=defs.map(([key,label])=>{
+   const vals=[...new Set(rows.filter(r=>defs.every(([other])=>other===key||!f[other]||clean(value(r,other))===clean(f[other]))).map(r=>clean(value(r,key))).filter(Boolean))].sort();
+   return \`<div class="field"><label>\${label}</label><select id="f_\${key}"><option value="">TODOS</option>\${vals.map(v=>\`<option value="\${esc(v)}" \${f[key]===v?"selected":""}>\${esc(v)}</option>\`).join("")}</select></div>\`;
+ }).join("");
+ defs.forEach(([key])=>document.getElementById("f_"+key).addEventListener("change",render));
+ const filtered=rows.filter(r=>defs.every(([k])=>!f[k]||clean(value(r,k))===clean(f[k])));
+ const total=filtered.reduce((s,r)=>s+(Number(r["VALOR TRAYECTO"])||0),0);
+ const dist=filtered.reduce((s,r)=>s+(Number(r["DISTANCIA SIGUIENTE PDV"])||0),0);
+ const paid=filtered.filter(r=>r["ESTADO VALORIZACION"]==="VALORIZADO").length;
+ const routesN=new Set(filtered.map(r=>\`\${clean(value(r,"persona"))}|\${clean(value(r,"fecha"))}\`)).size;
+ const uniquePDV=new Set(filtered.map(r=>clean(value(r,"pv"))).filter(Boolean)).size;
+ const visits=filtered.filter(r=>!r._esDesplazamientoAdicional).length;
+ const displacementCount=filtered.filter(r=>clean(r["CIUDAD DESTINO"])).length;
+ const stats=[["PDV",uniquePDV],["Rutas",routesN],["Distancia total",dist.toFixed(2)+" km"],["Desplazamientos",displacementCount],["Valorizados",paid],["Costo total",money(total)],["Promedio/visita",money(visits?total/visits:0)],["Distancia caminable",Number(DATA.maxWalk||0).toLocaleString("es-CO")+" m"]];
+ document.getElementById("stats").innerHTML=stats.map(([label,val])=>\`<div class="stat"><b>\${esc(val)}</b><span>\${esc(label)}</span></div>\`).join("");
+ document.getElementById("count").textContent=filtered.length.toLocaleString("es-CO")+" registros";
+ document.getElementById("tbody").innerHTML=filtered.map(r=>{const zero=Number(value(r,"orden"))===0;const blank=["NOMBRE COMERCIAL","REGIONAL","POBLACION","CIUDAD","PUNTO DE VENTA"];const vals=displayCols.map(c=>zero&&blank.includes(c.label)?"":(c.value?c.value(r):(c.source===fields.ciudad?String(r[c.source]??"").normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").toUpperCase():r[c.source])));return "<tr>"+vals.map(v=>\`<td>\${esc(v)}</td>\`).join("")+"</tr>";}).join("")||\`<tr><td colspan="\${displayCols.length}">Sin registros para los filtros seleccionados.</td></tr>\`;
+}
+render();
+<\/script></body></html>`;
+  const blob=new Blob([reportHtml],{type:"text/html;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");a.href=url;a.download="INFORME_VALORIZACION_RUTAS.html";document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+  showNotice("Informe HTML descargado correctamente");
+}
+
+function esc(v){
+  return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+// Vinculación explícita del botón para evitar depender de onclick inline.
+document.addEventListener("DOMContentLoaded",()=>{
+  const btn=document.getElementById("btnRunValuation");
+  if(btn) btn.addEventListener("click",runValuation);
+});
+
+// Navegación directa desde el stepper superior.
+// Se reutiliza goStep() para conservar las validaciones existentes.
+document.addEventListener("DOMContentLoaded",()=>{
+  [1,2,3,4].forEach(i=>{
+    const step=document.getElementById("s"+i);
+    if(!step) return;
+    step.setAttribute("role","button");
+    step.setAttribute("tabindex","0");
+    step.setAttribute("aria-label","Ir al paso "+i);
+    step.addEventListener("click",()=>goStep(i));
+    step.addEventListener("keydown",e=>{
+      if(e.key==="Enter" || e.key===" "){
+        e.preventDefault();
+        goStep(i);
+      }
+    });
+  });
+});
+
+</script>
+</body>
+</html>
